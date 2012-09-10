@@ -162,7 +162,45 @@ implicit none
 
 end subroutine shuffle_int_dimn
 
+!Subroutine that takes two sets, shuffles them together n times, then divides them along the columns, returning same sized arrays that are a mix of both sets.
+subroutine shuffle_cut(setA, setB, n)
+implicit none
 
+	double precision, dimension(:,:), intent(inout) :: setA, setB
+	integer, optional, intent(in) :: n
+	double precision, dimension((size(setA,1)+size(setB,1)),size(setA,2)) :: work
+	double precision ::  rand
+	integer :: i, iend
+
+	!Load the work function.
+	do i=1,size(work,1)
+		if (i .le. size(setA,1)) then
+			work(i,:)=setA(i,:)
+		else
+			work(i,:)=setB(i-size(setA,1),:)
+		end if
+	end do
+
+	!Shuffle the set.
+	if (present(n)) then
+		iend=n
+	else
+		iend=2
+	end if
+	do i=1,iend
+		call shuffle(work)
+	end do
+
+	!Unload work.
+	do i=1,size(work,1)
+		if (i .le. size(setA,1)) then
+			setA(i,:)=work(i,:)
+		else
+			setB(i-size(setA,1),:)=work(i,:)
+		end if
+	end do
+
+end subroutine shuffle_cut
 
 
 !Function to make a cluster of "n" points centered at "center" with given std "sigma."
