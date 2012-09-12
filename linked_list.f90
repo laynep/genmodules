@@ -19,7 +19,7 @@ implicit none
 	!This is a node in the link.
 	type :: llnode
 		!This point to the next nodes. Initializes to null.
-		type(llnode), pointer :: next => null()
+		type(llnode), pointer :: next 
 		!This is the data.
 		double precision, dimension(:), allocatable :: a
 	end type llnode 
@@ -252,7 +252,8 @@ contains
 		!memory space dynamically for pointers!
 		allocate(node)
 
-		!Sets the array component equal to array.  Automatically allocates array.
+		!Sets the array component equal to array.  Automatically allocates a.
+		allocate(node%a(size(array)))
 		node%a=array
 		!Sets pointer components to point to null.
 		node%next=>null()
