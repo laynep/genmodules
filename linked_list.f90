@@ -2,11 +2,11 @@
 !Layne Price, University of Auckland, 5/9/2012
 !*********************************************
 
-!This is a module that has everything necessary to create a linked list.  Each node in the list is represented by some data --- in this case an allocatable array --- with two pointers, one pointing down the list, one pointing up.  
+!This is a module that has everything necessary to create a linked list.  Each node in the list is represented by some data --- in this case an allocatable array --- with one pointer pointing down the list.  
 
-!The list is started by a node-pointer, called the "head," and ended by a node-pointer, called the "tail."  "Head" points at the first element in the list, itself a node-pointer that points to a real node.  The real nodes have two pointers, one going back up the list (prev) and one going down it (next).  These point to the next node-pointer in the chain.  This is shown below:
+!The list is started by a node-pointer, called the "head," and ended by a node-pointer, called the "tail."  "Head" points at the first element in the list, itself a node-pointer that points to a real node.  The real nodes have a pointer going down the list.  These point to the next node-pointer in the chain.  This is shown below:
 
-!         node1 <===========V       node2 <============V    node-end
+!         node1 ===========V       node2 ============V    node-end
 !          ^                       ^                       ^
 ! HEAD => NODE1-POINT /   NODE2-POINT / ... /     NODE-END-POINT <= TAIL
 
@@ -18,8 +18,8 @@ implicit none
 
 	!This is a node in the link.
 	type :: llnode
-		!These point to the prev and next nodes.
-		type(llnode), pointer :: next, prev
+		!This point to the next nodes. Initializes to null.
+		type(llnode), pointer :: next => null()
 		!This is the data.
 		double precision, dimension(:), allocatable :: a
 	end type llnode 
@@ -72,7 +72,6 @@ contains
 		!Check if list is empty.
 		if (.not. associated(head)) then !List is empty.
 			sel%next=>null()
-			sel%prev=>null()
 			if (present(minus)) minus=>head
 			if (present(plus)) plus=>tail
 		else
@@ -102,7 +101,6 @@ contains
 				end if		
 			end do
 			!If haven't reached end, then load nodes.
-			if (present(minus)) minus=>move%prev
 			if (present(plus) ) then
 				if (associated(move%next)) then
 					!Setting obj=pointer sets obj=pointer's target.
@@ -125,7 +123,6 @@ contains
 
 		!Check if the list is empty.
 		if (associated(head)) then !Not empty.
-			new%prev => tail	!Point back up chain.
 			tail%next => new	!Whichever node is tail, connect to new.
 						!This should point to an unnamed llnode.
 						!i.e. new=>unnamed node defined via allocate.
@@ -138,7 +135,6 @@ contains
 						!the first node.
 			tail => new		!Attach the tail, indicated new is the end.
 			tail%next => null()	!No successor to node that new points to.
-			head%prev => null()	!No predecessor.
 		end if
 
 	end subroutine ll_append
@@ -155,8 +151,6 @@ contains
 		if(n==0) then
 			call ll_nav(n,head,tail,sel,plus)
 			head=>new
-			new%prev=>head
-			plus%prev=>new
 			new%next=>plus
 			return
 		end if
@@ -171,11 +165,8 @@ contains
 			return
 		else
 			sel%next=>null()
-			plus%prev=>null()
 			new%next=>plus
-			new%prev=>sel
 			sel%next=>new
-			plus%prev=>new
 			
 		end if
 
@@ -196,11 +187,12 @@ contains
 		else
 			move=>head
 			do
-				if (allocated(move%a)) then
-					print*,(move%a(i),i=1,size(move%a))
+				print*,(move%a(i),i=1,size(move%a))
+				if (.not. associated(move%next)) then
+					exit
+				else
+					move=>move%next
 				end if
-				move=>move%next
-				if (.not. associated(move)) exit
 			end do
 		end if
 
@@ -235,9 +227,7 @@ contains
 		else
 			move=>head
 			do
-				if (allocated(move%a)) then
-					write(unit=numb),(move%a(i),i=1,size(move%a))
-				end if
+				write(unit=numb),(move%a(i),i=1,size(move%a))
 				move=>move%next
 				if (.not. associated(move)) exit
 			end do
@@ -266,7 +256,6 @@ contains
 		node%a=array
 		!Sets pointer components to point to null.
 		node%next=>null()
-		node%prev=>null()
 
 	end subroutine ll_make
 
@@ -311,34 +300,30 @@ contains
 	end subroutine ll_to_array
 
 
-	!Delete the first element in a linked list.  Optionally returns a pointer to the first node.
+	!Delete the first element in a linked list.  Returns a pointer to the first node.
 	subroutine ll_del_first(head, tail, first)
 	implicit none
 
 		type(llnode), pointer, intent(inout) :: head, tail
 		type(llnode), pointer :: test
-		type(llnode), pointer, optional, intent(out) :: first
+		type(llnode), pointer, intent(out) :: first
 
 		!Check to see if list is empty.
 		if (associated(head)) then !list not empty.
 			!Check if more than 1 node.
 			if (associated(head%next)) then !more than one node.
-				test => head
-				if(present(first)) first => test
+				first => head
 				!Makes sure unnamed array deallocated in mem.
-				deallocate(test)
 				head => head%next
 			else
-				test => head
-				if(present(first)) first => test
-				deallocate(test)
+				first => head
 				head => null()
 				tail => null()
 			end if
 			
 		else
 			!List empty.
-			if (present(first)) first => null()
+			first => null()
 		end if
 
 	end subroutine ll_del_first
@@ -349,21 +334,19 @@ contains
 	implicit none
 
 		type(llnode), pointer, intent(inout) :: head, tail
+		type(llnode), pointer :: next
 		
 		do
 			!Check if list empty.
 			if (.not. associated(head)) then
 				exit
 			else
-				call ll_del_first(head,tail)
+				call ll_del_first(head,tail,next)
+				nullify(next)
 			end if			
 		end do
 
 	end subroutine
-
-
-
-
 
 
 end module linked_list
