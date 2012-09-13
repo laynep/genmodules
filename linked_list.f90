@@ -24,6 +24,10 @@ implicit none
 		double precision, dimension(:), allocatable :: a
 	end type llnode 
 
+	type :: linkedlist
+		type(llnode), pointer :: head=>null(), tail=>null()
+	end type linkedlist
+
 
 contains
 
@@ -140,7 +144,7 @@ contains
 	end subroutine ll_append
 
 	!Add a node to the end of the nth node in a list, making the new node the (n+1)st node
-	subroutine ll_insert(n,new,head,tail)
+	subroutine ll_insert(n,new,head, tail)
 	implicit none
 
 		type(llnode), pointer, intent(inout) :: head, tail
@@ -164,10 +168,8 @@ contains
 			call ll_append(new,head,tail)
 			return
 		else
-			sel%next=>null()
-			new%next=>plus
-			sel%next=>new
-			
+			new%next => plus
+			sel%next => new			
 		end if
 
 	end subroutine
@@ -252,7 +254,7 @@ contains
 		!memory space dynamically for pointers!
 		allocate(node)
 
-		!Sets the array component equal to array.  Automatically allocates a.
+		!Sets the array component equal to array.
 		allocate(node%a(size(array)))
 		node%a=array
 		!Sets pointer components to point to null.
