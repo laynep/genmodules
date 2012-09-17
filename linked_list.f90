@@ -304,8 +304,8 @@ contains
 			!Check if more than 1 node.
 			if (associated(list%head%next)) then !more than one node.
 				first => list%head
-				!Makes sure unnamed array deallocated in mem.
 				list%head => list%head%next
+        first%next => null()
 			else
 				first => list%head
 				list%head => null()
