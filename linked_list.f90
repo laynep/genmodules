@@ -14,23 +14,24 @@
 
 
 module linked_list
-implicit none
-
-  private
-  public ::  ll_nav, ll_append, ll_insert, ll_print, ll_write, ll_make,&
-  &ll_to_array, ll_del_first, ll_del_all
+  use types, only : dp
+  implicit none
 
 	!This is a node in the link.
 	type :: llnode
 		!This point to the next nodes. Initializes to null.
 		type(llnode), pointer :: next 
 		!This is the data.
-		double precision, dimension(:), allocatable :: a
+		real(dp), dimension(:), allocatable :: a
 	end type llnode 
 
 	type :: linkedlist
 		type(llnode), pointer :: head=>null(), tail=>null()
 	end type linkedlist
+
+  public ::  ll_nav, ll_append, ll_insert, ll_print, ll_write, ll_make,&
+  &ll_to_array, ll_del_first, ll_del_all, llnode, linkedlist
+
 
 
 contains
@@ -238,7 +239,7 @@ contains
 	implicit none
 
 		type(llnode), pointer, intent(inout) :: node
-		double precision, dimension(:), intent(in) :: array
+		real(dp), dimension(:), intent(in) :: array
 
 		!Creates an unnamed node of the specified size.  Since this is unnamed, it
 		!can only be referred to by a pointer and it does this implicitly whenever
@@ -261,7 +262,7 @@ contains
 	implicit none
 
 		type(linkedlist), intent(inout) :: list
-		double precision, dimension(:,:), allocatable, intent(out) :: table
+		real(dp), dimension(:,:), allocatable, intent(out) :: table
 		type(llnode), pointer :: move
 		integer :: counter, i
 

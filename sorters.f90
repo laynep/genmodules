@@ -35,8 +35,9 @@
 
  
 
-MODULE sorters
-implicit none
+module sorters
+  use types, only : dp
+  implicit none
 
 
 !Interface to subroutines.
@@ -53,21 +54,21 @@ end interface locate
 
 
 
-CONTAINS
+contains
 
 !**********************************************************
 !Heapsorts a table based on the first column only.
 
 !Adapted from Numerical Recipes pg 231.
 
-SUBROUTINE heapsort_d(table)
+subroutine heapsort_d(table)
 IMPLICIT NONE
 
-	DOUBLE PRECISION, DIMENSION(:,:), INTENT(INOUT) :: table
+	real(dp), DIMENSION(:,:), INTENT(INOUT) :: table
 	INTEGER :: n, l, ir, i, j, i_1, i_2
-	DOUBLE PRECISION, DIMENSION(SIZE(table,2)) :: rra	!Row temporary placeholder.
+	real(dp), DIMENSION(SIZE(table,2)) :: rra	!Row temporary placeholder.
 
-	rra=0D0
+	rra=0_dp
 	n=SIZE(table,1)
 	l = (n/2)+1	!Note the integer division.
 	ir = n
@@ -115,8 +116,8 @@ END SUBROUTINE heapsort_d
 SUBROUTINE vect_eq_tablerow_d(vect,i,table)
 IMPLICIT NONE
 
-	DOUBLE PRECISION, DIMENSION(:), INTENT(INOUT) :: vect
-	DOUBLE PRECISION, DIMENSION(:,:), INTENT(IN) :: table
+	real(dp), DIMENSION(:), INTENT(INOUT) :: vect
+	real(dp), DIMENSION(:,:), INTENT(IN) :: table
 	INTEGER, INTENT(IN) :: i
 	INTEGER :: k
 
@@ -132,7 +133,7 @@ END SUBROUTINE vect_eq_tablerow_d
 SUBROUTINE row_equal_d(i,j,table)
 IMPLICIT NONE
 
-	DOUBLE PRECISION, DIMENSION(:,:), INTENT(INOUT) :: table
+	real(dp), DIMENSION(:,:), INTENT(INOUT) :: table
 	INTEGER, INTENT(IN) :: i,j
 	INTEGER :: k
 
@@ -416,8 +417,8 @@ END FUNCTION equalcond
 SUBROUTINE hunt(table, x, jlo)
 IMPLICIT NONE
 
-	DOUBLE PRECISION, DIMENSION(:,:), INTENT(IN) :: table
-	DOUBLE PRECISION, INTENT(IN) :: x
+	real(dp), DIMENSION(:,:), INTENT(IN) :: table
+	real(dp), INTENT(IN) :: x
 	INTEGER, INTENT(INOUT) :: jlo
 	INTEGER :: n, jhi, inc, jm
 	LOGICAL :: ascnd
@@ -474,8 +475,8 @@ END SUBROUTINE hunt
 SUBROUTINE locate_dp(table,x,j)
 IMPLICIT NONE
 
-	DOUBLE PRECISION, DIMENSION(:,:), INTENT(IN) :: table
-	DOUBLE PRECISION, INTENT(IN) :: x
+	real(dp), DIMENSION(:,:), INTENT(IN) :: table
+	real(dp), INTENT(IN) :: x
 	INTEGER :: jl, ju, n, jm
 	INTEGER :: i
 	INTEGER, INTENT(OUT) :: j
@@ -501,7 +502,7 @@ SUBROUTINE locate_int(table,x,j)
 IMPLICIT NONE
 
 	INTEGER, DIMENSION(:,:), INTENT(IN) :: table
-	DOUBLE PRECISION, INTENT(IN) :: x
+	real(dp), INTENT(IN) :: x
 	INTEGER :: jl, ju, n, jm
 	INTEGER :: i
 	INTEGER, INTENT(OUT) :: j

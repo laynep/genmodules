@@ -20,13 +20,14 @@ contains
 !Generate an array of n numbers sampled from a Gaussian normal distribution with mean and standard deviation given.
 !Adapted from RosettaCode.org.
 function normal(n,mean,std)
-implicit none
+  use types, only : dp
+  implicit none
  
   integer, intent(in) :: n
   integer :: i
-  double precision :: normal(n), temp
-  double precision, intent(in) :: mean, std
-  double precision, parameter :: pi = 4.0*ATAN(1.0)
+  real(dp) :: normal(n), temp
+  real(dp), intent(in) :: mean, std
+  real(dp), parameter :: pi = 4.0*ATAN(1.0)
 
   !Get uniform distribution.
   call random_number(normal)
@@ -100,12 +101,13 @@ implicit none
 end subroutine shuffle_int_1
 
 subroutine shuffle_dp_dimn(a)
-implicit none
+  use types, only : dp
+  implicit none
 
-	double precision, dimension(:,:), intent(inout) :: a
-	double precision, dimension(size(a,2)) :: temp
+  real(dp), dimension(:,:), intent(inout) :: a
+	real(dp), dimension(size(a,2)) :: temp
 	integer :: i, hold
-	double precision :: rand
+	real(dp) :: rand
 	
 	!Count backwards.
 	do i=size(a,1), 1, -1
@@ -121,12 +123,13 @@ implicit none
 end subroutine shuffle_dp_dimn
 
 subroutine shuffle_dp_1(a)
-implicit none
+  use types, only : dp
+  implicit none
 
-	double precision, dimension(:), intent(inout) :: a
-	double precision :: temp
+	real(dp), dimension(:), intent(inout) :: a
+	real(dp) :: temp
 	integer :: i, hold
-	double precision :: rand
+	real(dp) :: rand
 	
 	!Count backwards.
 	do i=size(a,1), 1, -1
@@ -142,12 +145,13 @@ implicit none
 end subroutine shuffle_dp_1
 
 subroutine shuffle_int_dimn(a)
-implicit none
+  use types, only : dp
+  implicit none
 
 	integer, dimension(:,:), intent(inout) :: a
 	integer, dimension(size(a,2)) :: temp
 	integer :: i, hold
-	double precision :: rand
+	real(dp) :: rand
 	
 	!Count backwards.
 	do i=size(a,1), 1, -1
@@ -164,12 +168,13 @@ end subroutine shuffle_int_dimn
 
 !Subroutine that takes two sets, shuffles them together n times, then divides them along the columns, returning same sized arrays that are a mix of both sets.
 subroutine shuffle_cut(setA, setB, n)
-implicit none
+  use types, only : dp
+  implicit none
 
-	double precision, dimension(:,:), intent(inout) :: setA, setB
+	real(dp), dimension(:,:), intent(inout) :: setA, setB
 	integer, optional, intent(in) :: n
-	double precision, dimension((size(setA,1)+size(setB,1)),size(setA,2)) :: work
-	double precision ::  rand
+	real(dp), dimension((size(setA,1)+size(setB,1)),size(setA,2)) :: work
+	real(dp) ::  rand
 	integer :: i, iend
 
 	!Load the work function.
@@ -205,20 +210,21 @@ end subroutine shuffle_cut
 
 !Function to make a cluster of "n" points centered at "center" with given std "sigma."
 function make_blob(n, center, sigma)
-implicit none
+  use types, only : dp
+  implicit none
 
-	double precision, dimension(:), intent(in) :: center
-	double precision, optional, intent(in) :: sigma
-	double precision :: std
+	real(dp), dimension(:), intent(in) :: center
+	real(dp), optional, intent(in) :: sigma
+	real(dp):: std
 	integer, intent(in) :: n
-	double precision, dimension(:,:), allocatable :: make_blob
+	real(dp), dimension(:,:), allocatable :: make_blob
 	integer :: i,j
 
 	!Optional argument for standard deviation.
 	if (present(sigma)) then
 		std = sigma
 	else
-		std = 1d0
+		std = 1_dp
 	end if
 
 	call init_random_seed()
