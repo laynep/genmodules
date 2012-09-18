@@ -19,22 +19,26 @@ module linked_list
 
 	!This is a node in the link.
 	type :: llnode
-		!This point to the next nodes. Initializes to null.
+		!This point to the next node. Initializes to null.
 		type(llnode), pointer :: next 
 		!This is the data.
 		real(dp), dimension(:), allocatable :: a
 	end type llnode 
 
+  !A linked list is specified by what the head and tail point to --- and what
+  !those subsequently point to in a chain.  It initializes to null.
 	type :: linkedlist
 		type(llnode), pointer :: head=>null(), tail=>null()
 	end type linkedlist
 
-  !Default to private.
-  private
-  public ::  ll_nav, ll_append, ll_insert, ll_print, ll_write, ll_make,&
-  &ll_to_array, ll_del_first, ll_del_all, llnode, linkedlist
-
-
+  !A double linked list extends the notion of a linked list by inheriting its
+  !attributes and adding a pointer going back up the chain.
+  !NOTE: Requires Fortran 2003.
+!  type, extends(llnode) :: ll_dnode
+!    type(llnode), pointer :: prev
+!  end type ll_dnode
+!
+  !Default to public.
 
 contains
 
@@ -47,7 +51,7 @@ contains
 	subroutine ll_nav(n,list,sel,plus,minus)
 	implicit none
 
-		integer, intent(in) :: n
+integer, intent(in) :: n
 		type(linkedlist), intent(in) :: list
 		type(llnode), pointer, intent(out) :: sel
 		type(llnode), pointer, optional, intent(out) :: plus, minus

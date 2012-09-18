@@ -13,8 +13,8 @@ module types
   real(dp), parameter :: pi=3.14159265358979323846264338327950288_dp
   real(dp), parameter :: e=2.71828182845904523536028747135266249_dp
 
+  !Set private to default.
   private
   public :: sp, dp, qp, pi, e
 
 end module types
-
