@@ -15,6 +15,9 @@ interface shuffle
 	module procedure shuffle_int_1
 end interface
 
+!Default to public.
+
+
 contains
 
 !Generate an array of n numbers sampled from a Gaussian normal distribution with mean and standard deviation given.

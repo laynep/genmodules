@@ -61,208 +61,194 @@ contains
 
 !Adapted from Numerical Recipes pg 231.
 
-subroutine heapsort_d(table)
-IMPLICIT NONE
+pure subroutine heapsort_d(table)
+  implicit none
 
-	real(dp), DIMENSION(:,:), INTENT(INOUT) :: table
-	INTEGER :: n, l, ir, i, j, i_1, i_2
-	real(dp), DIMENSION(SIZE(table,2)) :: rra	!Row temporary placeholder.
+	real(dp), dimension(:,:), intent(inout) :: table
+	integer :: n, l, ir, i, j, i_1, i_2
+	real(dp), dimension(size(table,2)) :: rra	!row temporary placeholder.
 
 	rra=0_dp
-	n=SIZE(table,1)
-	l = (n/2)+1	!Note the integer division.
+	n=size(table,1)
+	l = (n/2)+1	!note the integer division.
 	ir = n
-do1:	DO		!Indefinite do.  Exited by return statement in IF.
-		IF(l > 1) THEN
+do1:	do		!indefinite do.  exited by return statement in if.
+		if(l > 1) then
 			l = l-1
-			CALL vect_eq_tablerow_d(rra,l,table)	
-		ELSE
-			CALL vect_eq_tablerow_d(rra,ir,table)	
-			CALL row_equal_d(ir,1,table)
+			call vect_eq_tablerow_d(rra,l,table)	
+		else
+			call vect_eq_tablerow_d(rra,ir,table)	
+			call row_equal_d(ir,1,table)
 			ir = ir -1
-			IF(ir==1)THEN
-				DO i_1=1,SIZE(table,2)
+			if(ir==1)then
+				do i_1=1,size(table,2)
 					table(1,i_1) = rra(i_1)
-				END DO
-				RETURN
-			END IF
-		END IF
+				end do
+				return
+			end if
+		end if
 		i = l
 		j = l+l
-do2:		DO WHILE(j <= ir)
-			IF(j < ir) THEN
-				IF(table(j,1) < table(j+1,1)) THEN
+do2:		do while(j <= ir)
+			if(j < ir) then
+				if(table(j,1) < table(j+1,1)) then
 					j = j+1
-				END IF
-			END IF
-			IF(rra(1) < table(j,1)) THEN
-				CALL row_equal_d(i,j,table)
+				end if
+			end if
+			if(rra(1) < table(j,1)) then
+				call row_equal_d(i,j,table)
 				i = j
 				j =j+j
-			ELSE
+			else
 				j = ir + 1
-			END IF
-		END DO do2
-		DO i_2=1,SIZE(table,2)
+			end if
+		end do do2
+		do i_2=1,size(table,2)
 			table(i,i_2) = rra(i_2)
-		END DO
-	END DO do1
+		end do
+	end do do1
 		
 
-END SUBROUTINE heapsort_d
+end subroutine heapsort_d
 
 
-!This subroutine makes a vector (of rank equal to the number of columns in table) equal to the ith row in a table.
-SUBROUTINE vect_eq_tablerow_d(vect,i,table)
-IMPLICIT NONE
+!this subroutine makes a vector (of rank equal to the number of columns in table) equal to the ith row in a table.
+pure subroutine vect_eq_tablerow_d(vect,i,table)
+implicit none
 
-	real(dp), DIMENSION(:), INTENT(INOUT) :: vect
-	real(dp), DIMENSION(:,:), INTENT(IN) :: table
-	INTEGER, INTENT(IN) :: i
-	INTEGER :: k
+	real(dp), dimension(:), intent(inout) :: vect
+	real(dp), dimension(:,:), intent(in) :: table
+	integer, intent(in) :: i
+	integer :: k
 
-	DO k=1,SIZE(vect)
-		vect(k) = table(i,k)
-	END DO
+	vect(:) = table(i,:)
 
-END SUBROUTINE vect_eq_tablerow_d
+end subroutine vect_eq_tablerow_d
 
 
 
-!This subroutine changes the ith row of a table to equal the jth row.
-SUBROUTINE row_equal_d(i,j,table)
-IMPLICIT NONE
+!this subroutine changes the ith row of a table to equal the jth row.
+pure subroutine row_equal_d(i,j,table)
+implicit none
 
-	real(dp), DIMENSION(:,:), INTENT(INOUT) :: table
-	INTEGER, INTENT(IN) :: i,j
-	INTEGER :: k
+	real(dp), dimension(:,:), intent(inout) :: table
+	integer, intent(in) :: i,j
 
+	table(i,:) = table(j,:)
 
-	DO k=1,SIZE(table,2)
-		table(i,k) = table(j,k)
-	END DO
-
-
-END SUBROUTINE row_equal_d
+end subroutine row_equal_d
 
 
 
 !***********************************************************************************
-!For INTEGERS
+!for integers
 
-!Heapsorts an integer table based on the first column only.
+!heapsorts an integer table based on the first column only.
 
-!Adapted from Numerical Recipes pg 231.
+!adapted from numerical recipes pg 231.
 
-SUBROUTINE int_heapsort(table)
-IMPLICIT NONE
+pure subroutine int_heapsort(table)
+implicit none
 
-	INTEGER, DIMENSION(:,:), INTENT(INOUT) :: table
-	INTEGER :: n, l, ir, i, j, i_1, i_2
-	INTEGER, DIMENSION(SIZE(table,2)) :: rra	!Row temporary placeholder.
+	integer, dimension(:,:), intent(inout) :: table
+	integer :: n, l, ir, i, j, i_1, i_2
+	integer, dimension(size(table,2)) :: rra	!row temporary placeholder.
 	
-	n=SIZE(table,1)
-	l = (n/2)+1	!Note the integer division.
+	n=size(table,1)
+	l = (n/2)+1	!note the integer division.
 	ir = n
 
-do1:	DO		!Indefinite do.  Exited by return statement in IF.
+do1:	do		!indefinite do.  exited by return statement in if.
 
-		IF(l > 1) THEN
+		if(l > 1) then
 			l = l-1
-			CALL int_vect_eq_tablerow(rra,l,table)	
-		ELSE
-			CALL int_vect_eq_tablerow(rra,ir,table)	
-			CALL int_row_equal(ir,1,table)
+			call int_vect_eq_tablerow(rra,l,table)	
+		else
+			call int_vect_eq_tablerow(rra,ir,table)	
+			call int_row_equal(ir,1,table)
 			ir = ir -1
-			IF(ir==1)THEN
-				DO i_1=1,SIZE(table,2)
+			if(ir==1)then
+				do i_1=1,size(table,2)
 					table(1,i_1) = rra(i_1)
-				END DO
-				RETURN
-			END IF
-		END IF
+				end do
+				return
+			end if
+		end if
 
 		i = l
 		j = l+l
 
-do2:		DO WHILE(j <= ir)
-			IF(j < ir) THEN
-				IF(table(j,1) < table(j+1,1)) j = j+1
-			END IF
-			IF(rra(1) < table(j,1)) THEN
-				CALL int_row_equal(i,j,table)
+do2:		do while(j <= ir)
+			if(j < ir) then
+				if(table(j,1) < table(j+1,1)) j = j+1
+			end if
+			if(rra(1) < table(j,1)) then
+				call int_row_equal(i,j,table)
 				i = j
 				j =j+j
-			ELSE
+			else
 				j = ir + 1
-			END IF
-		END DO do2
+			end if
+		end do do2
 
-		DO i_2=1,SIZE(table,2)
+		do i_2=1,size(table,2)
 			table(i,i_2) = rra(i_2)
-		END DO
+		end do
 
-	END DO do1
+	end do do1
 		
 
-END SUBROUTINE int_heapsort
+end subroutine int_heapsort
 
 
-!This subroutine makes a vector (of rank equal to the number of columns in table) equal to the ith row in a table.
+!this subroutine makes a vector (of rank equal to the number of columns in table) equal to the ith row in a table.
 
-SUBROUTINE int_vect_eq_tablerow(vect,i,table)
-IMPLICIT NONE
+pure subroutine int_vect_eq_tablerow(vect,i,table)
+implicit none
 
-	INTEGER, DIMENSION(:), INTENT(INOUT) :: vect
-	INTEGER, DIMENSION(:,:), INTENT(INOUT) :: table
-	INTEGER, INTENT(IN) :: i
-	INTEGER :: k
+	integer, dimension(:), intent(inout) :: vect
+	integer, dimension(:,:), intent(inout) :: table
+	integer, intent(in) :: i
 
-	DO k=1,SIZE(vect)
-		vect(k) = table(i,k)
-	END DO
+  vect(:) = table(i,:)
 
-END SUBROUTINE int_vect_eq_tablerow
+end subroutine int_vect_eq_tablerow
 
-!This subroutine changes the ith row of a table to equal the jth row.
+!this subroutine changes the ith row of a table to equal the jth row.
 
-SUBROUTINE int_row_equal(i,j,table)
-IMPLICIT NONE
+pure subroutine int_row_equal(i,j,table)
+implicit none
 
-	INTEGER, DIMENSION(:,:), INTENT(INOUT) :: table
-	INTEGER, INTENT(IN) :: i,j
-	INTEGER :: k
+	integer, dimension(:,:), intent(inout) :: table
+	integer, intent(in) :: i,j
+
+	table(i,:) = table(j,:)
 
 
-	DO k=1,SIZE(table,2)
-		table(i,k) = table(j,k)
-	END DO
-
-
-END SUBROUTINE int_row_equal
+end subroutine int_row_equal
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-SUBROUTINE heapsort_order2(table)
-IMPLICIT NONE
+pure subroutine heapsort_order2(table)
+implicit none
 
-	INTEGER, DIMENSION(:,:), INTENT(INOUT) :: table
-	INTEGER, DIMENSION(:,:), ALLOCATABLE :: block
-	INTEGER :: counter, maxim, minim, nrows, ncols, nblock, low, countsum
-	INTEGER :: i_1, i_2, i_3, i_4, i_5, i_6
+	integer, dimension(:,:), intent(inout) :: table
+	integer, dimension(:,:), allocatable :: block
+	integer :: counter, maxim, minim, nrows, ncols, nblock, low, countsum
+	integer :: i_1, i_2, i_3, i_4, i_5, i_6
 
-	nrows = SIZE(table,1)
-	ncols = SIZE(table,2)
+	nrows = size(table,1)
+	ncols = size(table,2)
 	nblock = ncols - 1
 
-	IF(ncols==1) THEN
-		CALL int_heapsort(table)
-		RETURN
-	END IF
+	if(ncols==1) then
+		call int_heapsort(table)
+		return
+	end if
 
-	IF(nrows==1) RETURN
+	if(nrows==1) return
 	
 	maxim = table(nrows,1)
 	minim = table(1,1)
@@ -271,259 +257,259 @@ IMPLICIT NONE
 	counter = 0
 	countsum = 0
 
-do1:	DO i_1=minim, maxim
+do1:	do i_1=minim, maxim
 
 		counter = 0
 
-	do2:	DO i_2=low, nrows
-			IF(table(i_2,1)==i_1)THEN
+	do2:	do i_2=low, nrows
+			if(table(i_2,1)==i_1)then
 				counter = counter + 1
-			ELSE IF(table(i_2,1) > i_1) THEN
+			else if(table(i_2,1) > i_1) then
 				low = i_2
-				EXIT do2
-			END IF
-		END DO do2
+				exit do2
+			end if
+		end do do2
 
-		IF(counter>1) THEN
+		if(counter>1) then
 
-			ALLOCATE(block(counter,nblock))
+			allocate(block(counter,nblock))
 
-		do3:	DO i_3=1,counter
-			do4:	DO i_4=1,nblock
+		do3:	do i_3=1,counter
+			do4:	do i_4=1,nblock
 					block(i_3,i_4) = table(countsum+i_3,i_4+1)
-				END DO do4
-			END DO do3
+				end do do4
+			end do do3
 
-			CALL int_heapsort(block)
+			call int_heapsort(block)
 
-		do5:	DO i_5=1,counter
-			do6:	DO i_6=1,nblock
+		do5:	do i_5=1,counter
+			do6:	do i_6=1,nblock
 					table(countsum+i_5,i_6+1) = block(i_5,i_6)
-				END DO do6
-			END DO do5
+				end do do6
+			end do do5
 
-			DEALLOCATE(block)
-		END IF
+			deallocate(block)
+		end if
 
 		countsum = countsum + counter
 
-	END DO do1
+	end do do1
 		
 		
 
 
-END SUBROUTINE heapsort_order2
+end subroutine heapsort_order2
 
 !*****************************************************
 
-SUBROUTINE heapsorttotal(table)
-IMPLICIT NONE
+pure subroutine heapsorttotal(table)
+implicit none
 
-	INTEGER, DIMENSION(:,:), INTENT(INOUT) :: table
-	INTEGER, DIMENSION(:,:), ALLOCATABLE :: block
-	INTEGER :: nrows, ncols, counter, low, countsum, nblock
-	INTEGER :: i_1,i_2,i_3,i_4,i_5,i_6
-	LOGICAL :: same
+	integer, dimension(:,:), intent(inout) :: table
+	integer, dimension(:,:), allocatable :: block
+	integer :: nrows, ncols, counter, low, countsum, nblock
+	integer :: i_1,i_2,i_3,i_4,i_5,i_6
+	logical :: same
 
-	IF(nrows==1)RETURN
+	if(nrows==1)return
 
-	nrows = SIZE(table,1)
-	ncols = SIZE(table,2)
+	nrows = size(table,1)
+	ncols = size(table,2)
 
-	!Assume it's sorted to order 1 already by int_heapsort.  Uncomment if not.
-	CALL int_heapsort(table)
-	IF(ncols==1) RETURN
+	!assume it's sorted to order 1 already by int_heapsort.  uncomment if not.
+	call int_heapsort(table)
+	if(ncols==1) return
 
-	!Sort to order 2.	
-	CALL heapsort_order2(table)
-	IF(ncols<=2) RETURN
+	!sort to order 2.	
+	call heapsort_order2(table)
+	if(ncols<=2) return
 
-	DO i_1=2,ncols-1
+	do i_1=2,ncols-1
 		countsum = 0
 		counter = 0
-	do2:	DO i_2=1,nrows
+	do2:	do i_2=1,nrows
 			same = equalcond(i_1,i_2,(i_2+1),table)
-			IF(same .EQV. .TRUE.) THEN
+			if(same .eqv. .true.) then
 				counter = counter + 1
-			ELSEIF(same .EQV. .FALSE.) THEN
+			elseif(same .eqv. .false.) then
 				counter = counter + 1
 				nblock = ncols - i_1		
-				IF(counter==1) THEN
+				if(counter==1) then
 					countsum = countsum + counter
 					counter = 0
-					CYCLE do2
-				END IF							
-				ALLOCATE(block(counter,nblock))
-				DO i_3=1,counter
-					DO i_4=1,nblock
+					cycle do2
+				end if							
+				allocate(block(counter,nblock))
+				do i_3=1,counter
+					do i_4=1,nblock
 						block(i_3,i_4)=table(countsum+i_3,i_4+i_1)
-					END DO
-				END DO	
+					end do
+				end do	
 
-				CALL int_heapsort(block)
+				call int_heapsort(block)
 				
-				DO i_5=1,counter
-					DO i_6=1,nblock
+				do i_5=1,counter
+					do i_6=1,nblock
 						table(countsum+i_5,i_6+i_1)=block(i_5,i_6)
-					END DO
-				END DO
+					end do
+				end do
 				
-				DEALLOCATE(block)
+				deallocate(block)
 				
 				countsum = countsum + counter
 				counter = 0
-			END IF
-		END DO do2
-	END DO
+			end if
+		end do do2
+	end do
 
-END SUBROUTINE heapsorttotal
+end subroutine heapsorttotal
 
-!Tells if the ith and jth row of a table are of equal value in the first numb of columns.
+!tells if the ith and jth row of a table are of equal value in the first numb of columns.
 
-!NOTE: if j>size of table, then returns FALSE by default.
+!note: if j>size of table, then returns false by default.
 
-LOGICAL FUNCTION equalcond(numb,i,j,table)
-IMPLICIT NONE
+pure logical function equalcond(numb,i,j,table)
+implicit none
 
-	INTEGER, INTENT(IN) :: numb,i,j
-	INTEGER, DIMENSION(:,:), INTENT(IN) :: table
-	INTEGER :: k
+	integer, intent(in) :: numb,i,j
+	integer, dimension(:,:), intent(in) :: table
+	integer :: k
 
-	IF(j>SIZE(table,1)) THEN
-		equalcond = .FALSE.
-		RETURN
-	END IF
+	if(j>size(table,1)) then
+		equalcond = .false.
+		return
+	end if
 
-dok:	DO k=1,numb
-		IF(table(i,k)==table(j,k))THEN
-			equalcond = .TRUE.
-		ELSE
-			equalcond = .FALSE.
-			EXIT dok
-		END IF
-	END DO dok
+dok:	do k=1,numb
+		if(table(i,k)==table(j,k))then
+			equalcond = .true.
+		else
+			equalcond = .false.
+			exit dok
+		end if
+	end do dok
 		
-END FUNCTION equalcond
+end function equalcond
 
 !*********************************************************
-!SUBROUTINE which uses the Hunt algorithm to find a point in an ordered table by first supplying the search with an initial guess.  If the guess is good, then this speeds up the bisection algorithm above by a factor of log_2(N).
+!subroutine which uses the hunt algorithm to find a point in an ordered table by first supplying the search with an initial guess.  if the guess is good, then this speeds up the bisection algorithm above by a factor of log_2(n).
 
-!This is taken from page 91 of Numerical Recipes.
+!this is taken from page 91 of numerical recipes.
 
-!Given an array, table, of length N and width M, which has been ordered by the values in its first column either ascending or descending and given a reference value X, the subroutine will return the value jlo st X is between TABLE(JLO,:) and TABLE(JLO+1,:)
+!given an array, table, of length n and width m, which has been ordered by the values in its first column either ascending or descending and given a reference value x, the subroutine will return the value jlo st x is between table(jlo,:) and table(jlo+1,:)
 
-!JLO on input is the original guess for the position in the table.
+!jlo on input is the original guess for the position in the table.
 
-SUBROUTINE hunt(table, x, jlo)
-IMPLICIT NONE
+pure subroutine hunt(table, x, jlo)
+implicit none
 
-	real(dp), DIMENSION(:,:), INTENT(IN) :: table
-	real(dp), INTENT(IN) :: x
-	INTEGER, INTENT(INOUT) :: jlo
-	INTEGER :: n, jhi, inc, jm
-	LOGICAL :: ascnd
+	real(dp), dimension(:,:), intent(in) :: table
+	real(dp), intent(in) :: x
+	integer, intent(inout) :: jlo
+	integer :: n, jhi, inc, jm
+	logical :: ascnd
 
-	n=SIZE(table,1)
+	n=size(table,1)
 
 	ascnd = table(n,1)>table(1,1)
-	IF(jlo .le. 0 .OR. jlo .gt. n) THEN
+	if(jlo .le. 0 .or. jlo .gt. n) then
 		jlo = 0
 		jhi = n+1
-		GO TO 3
-	END IF
+		go to 3
+	end if
 
 	inc = 1
 
-	IF(x .ge. table(jlo,1) .EQV. ascnd) THEN
+	if(x .ge. table(jlo,1) .eqv. ascnd) then
 1		jhi = jlo + inc
-		IF(jhi > n) THEN
+		if(jhi > n) then
 			jhi = n+1
-		ELSE IF(x.ge.table(jhi,1) .EQV. ascnd) THEN
+		else if(x.ge.table(jhi,1) .eqv. ascnd) then
 			jlo=jhi
 			inc = inc + inc
-			GO TO 1
-		END IF
-	ELSE
+			go to 1
+		end if
+	else
 		jhi = jlo
 2		jlo = jhi - inc
-		IF(jlo<1)THEN
+		if(jlo<1)then
 			jlo =0
-		ELSE IF (x<table(jlo,1) .EQV. ascnd) THEN
+		else if (x<table(jlo,1) .eqv. ascnd) then
 			jhi =jlo
 			inc = inc+inc
-			GO TO 2
-		END IF
-	END IF
+			go to 2
+		end if
+	end if
 
-3	IF(jhi-jlo.EQ.1)RETURN
+3	if(jhi-jlo.eq.1)return
 	jm=(jhi+jlo)/2
-	IF(x>table(jm,1) .EQV. ascnd) THEN
+	if(x>table(jm,1) .eqv. ascnd) then
 		jlo = jm
-	ELSE
+	else
 		jhi=jm
-	END IF
-	GO TO 3
+	end if
+	go to 3
 	
 
-END SUBROUTINE hunt
+end subroutine hunt
 
 !*******************************************************
-!SUBROUTINE which will search using bisection a table XX(n,m)  which has been previously ordered by its first column.  Given a value X it will return the value J such that X is between XX(J,1) and XX(J+1,1).  J=0 or J=SIZE(XX,1) if X is out of range.
+!subroutine which will search using bisection a table xx(n,m)  which has been previously ordered by its first column.  given a value x it will return the value j such that x is between xx(j,1) and xx(j+1,1).  j=0 or j=size(xx,1) if x is out of range.
 
-!This function is taken almost verbatim from Numerical Recipes pg 90.
+!this function is taken almost verbatim from numerical recipes pg 90.
 
-SUBROUTINE locate_dp(table,x,j)
-IMPLICIT NONE
+pure subroutine locate_dp(table,x,j)
+implicit none
 
-	real(dp), DIMENSION(:,:), INTENT(IN) :: table
-	real(dp), INTENT(IN) :: x
-	INTEGER :: jl, ju, n, jm
-	INTEGER :: i
-	INTEGER, INTENT(OUT) :: j
+	real(dp), dimension(:,:), intent(in) :: table
+	real(dp), intent(in) :: x
+	integer :: jl, ju, n, jm
+	integer :: i
+	integer, intent(out) :: j
 
-	n = SIZE(table,1)
-
-	jl = 0
-	ju = n+1
-	DO WHILE (ju-jl>1)
-		jm=(ju+jl)/2
-		IF((table(n,1)> table(1,1)) .EQV. (x > table(jm,1))) THEN
-			jl = jm
-		ELSE
-			ju=jm
-		END IF
-	END DO
-	j = jl
-
-
-END SUBROUTINE locate_dp
-
-SUBROUTINE locate_int(table,x,j)
-IMPLICIT NONE
-
-	INTEGER, DIMENSION(:,:), INTENT(IN) :: table
-	real(dp), INTENT(IN) :: x
-	INTEGER :: jl, ju, n, jm
-	INTEGER :: i
-	INTEGER, INTENT(OUT) :: j
-
-	n = SIZE(table,1)
+	n = size(table,1)
 
 	jl = 0
 	ju = n+1
-	DO WHILE (ju-jl>1)
+	do while (ju-jl>1)
 		jm=(ju+jl)/2
-		IF((table(n,1)> table(1,1)) .EQV. (x > table(jm,1))) THEN
+		if((table(n,1)> table(1,1)) .eqv. (x > table(jm,1))) then
 			jl = jm
-		ELSE
+		else
 			ju=jm
-		END IF
-	END DO
+		end if
+	end do
 	j = jl
 
 
-END SUBROUTINE locate_int
+end subroutine locate_dp
+
+pure subroutine locate_int(table,x,j)
+implicit none
+
+	integer, dimension(:,:), intent(in) :: table
+	real(dp), intent(in) :: x
+	integer :: jl, ju, n, jm
+	integer :: i
+	integer, intent(out) :: j
+
+	n = size(table,1)
+
+	jl = 0
+	ju = n+1
+	do while (ju-jl>1)
+		jm=(ju+jl)/2
+		if((table(n,1)> table(1,1)) .eqv. (x > table(jm,1))) then
+			jl = jm
+		else
+			ju=jm
+		end if
+	end do
+	j = jl
 
 
-END MODULE sorters
+end subroutine locate_int
+
+
+end module sorters
 

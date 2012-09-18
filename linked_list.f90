@@ -29,6 +29,8 @@ module linked_list
 		type(llnode), pointer :: head=>null(), tail=>null()
 	end type linkedlist
 
+  !Default to private.
+  private
   public ::  ll_nav, ll_append, ll_insert, ll_print, ll_write, ll_make,&
   &ll_to_array, ll_del_first, ll_del_all, llnode, linkedlist
 
