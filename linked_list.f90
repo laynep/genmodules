@@ -16,6 +16,10 @@
 module linked_list
 implicit none
 
+  private
+  public ::  ll_nav, ll_append, ll_insert, ll_print, ll_write, ll_make,&
+  &ll_to_array, ll_del_first, ll_del_all
+
 	!This is a node in the link.
 	type :: llnode
 		!This point to the next nodes. Initializes to null.
