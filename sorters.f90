@@ -43,7 +43,7 @@ module sorters
 !Interface to subroutines.
 interface heapsort
 	module procedure heapsort_d
-	module procedure int_heapsort
+	module procedure heapsorttotal
 end interface heapsort
 
 interface locate
@@ -294,9 +294,6 @@ do1:	do i_1=minim, maxim
 		countsum = countsum + counter
 
 	end do do1
-		
-		
-
 
 end subroutine heapsort_order2
 

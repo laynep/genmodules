@@ -240,4 +240,97 @@ function make_blob(n, center, sigma)
 
 end function make_blob
 
+!Subroutine that will return a random sample from a target distribution.  Uses
+!the Metropolis algorithm with a random Gaussian walk proposal function.
+!subroutine sample(func,table,n, std)
+!  use types, only : dp
+!  implicit none
+!
+!  interface
+!    real(dp) function func(x)
+!      use types, only : dp
+!      implicit none
+!      real(dp), intent(in) :: x
+!    end function
+!  end interface
+!  integer, intent(in) :: n
+!  real(dp), dimension(n), intent(out) :: table
+!  real(dp), optional, intent(in) :: std
+!  real(dp) :: sigma, y1, y2, a, rand, mean
+!  integer :: i
+!
+!  if (.not. present(std)) then
+!    sigma=1.0_dp
+!  else
+!    sigma=std
+!  end if
+!
+!  !Get a random point.
+!  mean = 0_dp
+!  y1 = normal(1,mean, sigma)
+!
+!  do i=1,n
+!    !Propose a new point.
+!    y2 = normal(1,y1,sigma)
+!
+!    !Accept with probability a.
+!    if ( (func(y2)/func(y1)) < 1_dp) then
+!      a = (func(y2)/func(y1))
+!    else
+!      a = 1_dp
+!    end if
+!
+!    call random_number(rand)
+!    if (rand<a) then
+!      !Accept
+!      table(i)=y2
+!      !Set old pt to new pt.
+!      y1=y2
+!    else
+!      !Decline
+!      table(i)=y1
+!    end if
+!    !Set old pt to new pt.
+!    y1=y2
+!  end do
+!
+!end subroutine sample
+
+
 end module rng
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
