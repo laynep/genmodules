@@ -20,7 +20,7 @@ module linked_list
 	!This is a node in the link.
 	type :: llnode
 		!This point to the next node. Initializes to null.
-		type(llnode), pointer :: next 
+		type(llnode), pointer :: next=>null()
 		!This is the data.
 		real(dp), dimension(:), allocatable :: a
 	end type llnode 
@@ -49,9 +49,9 @@ contains
 	!NOTE: this is much slower than the random access given by a simple array --- 
 	!O(n) vs O(1)
 	subroutine ll_nav(n,list,sel,plus,minus)
-	implicit none
+		implicit none
 
-integer, intent(in) :: n
+    integer, intent(in) :: n
 		type(linkedlist), intent(in) :: list
 		type(llnode), pointer, intent(out) :: sel
 		type(llnode), pointer, optional, intent(out) :: plus, minus
@@ -118,7 +118,7 @@ integer, intent(in) :: n
 	!Add a node to the end of the list.  Takes as input a pointer which points to the
 	!node which we want to add.  
 	subroutine ll_append(new, list)
-	implicit none
+		implicit none
 
 		type(linkedlist), intent(inout) :: list
 		type(llnode), pointer, intent(inout) :: new
@@ -144,7 +144,7 @@ integer, intent(in) :: n
 
 	!Add a node to the end of the nth node in a list, making the new node the (n+1)st node
 	subroutine ll_insert(n,new,list)
-	implicit none
+		implicit none
 
 		type(linkedlist), intent(inout) :: list
 		type(llnode), pointer, intent(inout) :: new
@@ -176,7 +176,7 @@ integer, intent(in) :: n
 
 	!Print a list.
 	subroutine ll_print(list)
-	implicit none
+		implicit none
 
 		type(linkedlist), intent(in) :: list
 		type(llnode), pointer :: move
@@ -201,7 +201,7 @@ integer, intent(in) :: n
 
 	!Write a list to file, "fname".  Optional input are formt, and unit.
 	subroutine ll_write(list,fname,frmt,unumb)
-	implicit none
+		implicit none
 
 		type(linkedlist), intent(in) :: list
 		character(len=*), intent(in) :: fname
@@ -242,7 +242,7 @@ integer, intent(in) :: n
 
 	!Make a new node from an array.
 	subroutine ll_make(node,array)
-	implicit none
+		implicit none
 
 		type(llnode), pointer, intent(inout) :: node
 		real(dp), dimension(:), intent(in) :: array
@@ -265,7 +265,7 @@ integer, intent(in) :: n
 	!Change a list to an array that it is conformable with.  Assumes that all the 
 	!vectors in the list are of the same dimension.
 	subroutine ll_to_array(list, table)
-	implicit none
+		implicit none
 
 		type(linkedlist), intent(inout) :: list
 		real(dp), dimension(:,:), allocatable, intent(out) :: table
@@ -304,7 +304,7 @@ integer, intent(in) :: n
 
 	!Delete the first element in a linked list.  Returns a pointer to the first node.
 	subroutine ll_del_first(list, first)
-	implicit none
+		implicit none
 
 		type(linkedlist), intent(inout) :: list
 		type(llnode), pointer :: test
@@ -333,7 +333,7 @@ integer, intent(in) :: n
 
 	!Delete all elements in a list.  Leaves the list initialized.
 	subroutine ll_del_all(list)
-	implicit none
+		implicit none
 
 		type(linkedlist), intent(inout) :: list
 		type(llnode), pointer :: move
@@ -344,37 +344,11 @@ integer, intent(in) :: n
 				exit
 			else
 				call ll_del_first(list,move)
+        deallocate(move)
 				nullify(move)
 			end if			
 		end do
 
 	end subroutine
-
-
-end module linked_list
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
