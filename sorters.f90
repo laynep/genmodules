@@ -33,27 +33,27 @@
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
- 
+
 
 module sorters
   use types, only : dp
   implicit none
 
+  !Interface to subroutines.
+  interface heapsort
+  	module procedure heapsort_d
+  	module procedure heapsorttotal
+  end interface heapsort
 
-!Interface to subroutines.
-interface heapsort
-	module procedure heapsort_d
-	module procedure heapsorttotal
-end interface heapsort
+  interface locate
+  	module procedure locate_dp
+  	module procedure locate_int
+    module procedure locate_int_int
+    module procedure locate_dp_vect
+  	module procedure locate_int_vect
+    module procedure locate_int_int_vect
 
-interface locate
-	module procedure locate_dp
-	module procedure locate_int
-  module procedure locate_int_int
-end interface locate
-
-
-
+  end interface locate
 
 contains
 
@@ -482,6 +482,33 @@ implicit none
 
 end subroutine locate_dp
 
+pure subroutine locate_dp_vect(table,x,j)
+implicit none
+
+	real(dp), dimension(:), intent(in) :: table
+	real(dp), intent(in) :: x
+	integer :: jl, ju, n, jm
+	integer :: i
+	integer, intent(out) :: j
+
+	n = size(table)
+
+	jl = 0
+	ju = n+1
+	do while (ju-jl>1)
+		jm=(ju+jl)/2
+		if((table(n)> table(1)) .eqv. (x > table(jm))) then
+			jl = jm
+		else
+			ju=jm
+		end if
+	end do
+	j = jl
+
+
+end subroutine locate_dp_vect
+
+
 pure subroutine locate_int(table,x,j)
 implicit none
 
@@ -508,6 +535,33 @@ implicit none
 
 end subroutine locate_int
 
+pure subroutine locate_int_vect(table,x,j)
+implicit none
+
+	integer, dimension(:), intent(in) :: table
+	real(dp), intent(in) :: x
+	integer :: jl, ju, n, jm
+	integer :: i
+	integer, intent(out) :: j
+
+	n = size(table)
+
+	jl = 0
+	ju = n+1
+	do while (ju-jl>1)
+		jm=(ju+jl)/2
+		if((table(n)> table(1)) .eqv. (x > table(jm))) then
+			jl = jm
+		else
+			ju=jm
+		end if
+	end do
+	j = jl
+
+
+end subroutine locate_int_vect
+
+
 pure subroutine locate_int_int(table,x,j)
 implicit none
 
@@ -533,6 +587,33 @@ implicit none
 
 
 end subroutine locate_int_int
+
+pure subroutine locate_int_int_vect(table,x,j)
+implicit none
+
+	integer, dimension(:), intent(in) :: table
+	integer, intent(in) :: x
+	integer :: jl, ju, n, jm
+	integer :: i
+	integer, intent(out) :: j
+
+	n = size(table)
+
+	jl = 0
+	ju = n+1
+	do while (ju-jl>1)
+		jm=(ju+jl)/2
+		if((table(n)> table(1)) .eqv. (x > table(jm))) then
+			jl = jm
+		else
+			ju=jm
+		end if
+	end do
+	j = jl
+
+
+end subroutine locate_int_int_vect
+
 
 end module sorters
 

@@ -69,15 +69,15 @@ implicit none
 	integer :: i, n, clock
 	integer, dimension(:), allocatable :: seed
 	integer, intent(in) :: rank
-          
+
 	call random_seed(size = n)
 	allocate(seed(n))
-          
+
 	call system_clock(count=clock)
-          
+
 	seed = clock + 37*rank* (/ (i - 1, i = 1, n) /)
 	call random_seed(PUT = seed)
-          
+
 	deallocate(seed)
 end subroutine init_random_seed_parallel
 
