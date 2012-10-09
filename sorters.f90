@@ -479,7 +479,6 @@ implicit none
 	end do
 	j = jl
 
-
 end subroutine locate_dp
 
 pure subroutine locate_dp_vect(table,x,j)
@@ -524,7 +523,7 @@ implicit none
 	ju = n+1
 	do while (ju-jl>1)
 		jm=(ju+jl)/2
-		if((table(n,1)> table(1,1)) .eqv. (x > table(jm,1))) then
+		if((table(n,1) .ge. table(1,1)) .eqv. (x > table(jm,1))) then
 			jl = jm
 		else
 			ju=jm
@@ -550,7 +549,7 @@ implicit none
 	ju = n+1
 	do while (ju-jl>1)
 		jm=(ju+jl)/2
-		if((table(n)> table(1)) .eqv. (x > table(jm))) then
+		if((table(n) .ge. table(1)) .eqv. (x > table(jm))) then
 			jl = jm
 		else
 			ju=jm
@@ -577,7 +576,7 @@ implicit none
 	ju = n+1
 	do while (ju-jl>1)
 		jm=(ju+jl)/2
-		if((table(n,1)> table(1,1)) .eqv. (x > table(jm,1))) then
+		if((table(n,1) .ge. table(1,1)) .eqv. (x > table(jm,1))) then
 			jl = jm
 		else
 			ju=jm
@@ -603,7 +602,7 @@ implicit none
 	ju = n+1
 	do while (ju-jl>1)
 		jm=(ju+jl)/2
-		if((table(n)> table(1)) .eqv. (x > table(jm))) then
+		if((table(n) .ge. table(1)) .eqv. (x > table(jm))) then
 			jl = jm
 		else
 			ju=jm
