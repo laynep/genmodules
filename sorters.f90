@@ -3,48 +3,30 @@
 ! Much of this is taken from Numerical Recipes, and where indicated elsewhere.
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!UPDATE OF SORTERS FOR DOUBLE PRECISION.
+!A module that contains procedures necessary for sorting and searching arrays.
+!The main uses of these modules will be calling the interfaces given in the
+!module declaration, which should be self-explanatory.
 
-!This is a module which contains a number of subroutines and functions used to sort an nXm array.  These subroutines are detailed here:
-
-!Sorters utilizing heapsort (Faster)
-!1.	vector_heapsort(ra)	SUBROUTINE: heapsorts a real vector ra.
-!2.	heapsort(table)		SUBROUTINE: heapsorts a real table based on the value of 					the first column only.
-!3.	vect_eq_tablerow(vect,i,table)	SUBROUTINE: makes a vector equal to the ith row in 					a table (same rank).
-!4.	row_equal(i,j,table)	SUBROUTINE: changes the ith row equal to jth row in table.
-!5.	int_heapsort(table)	SUBROUTINE: heapsorts an integer table on first column.
-!6.	int_vect_eq_tablerow(vect,i,table) SUBROUTINE: same as 3 for integers.
-!7.	int_row_equal(i,j,table) SUBROUTINE: same as 4 for integers.
-!8.	heapsort_order2(table)	SUBROUTINE: heapsorts int table based on first two cols only
-!9.*****heapsorttotal(table)	SUBROUTINE: heapsorts integer table ALL cols.
-!10.	equalcond(numb,i,j,table) FUNCTION: .TRUE. if i & j row of table equal in first 				numb of columns NOTE: .FALSE. if j exceeds nrows in table.
-
-!Sorters utilizng injection sort (Slow for large numbers).
-!1.	real_array_sort(table)	SUBROUTINE: injection sorts real array by 1st colmn
-!2.	real_row_switch(i_1,i_2,table) SUBROUTINE: switches i_1&i_2 cols in table
-!3.	int_array_sort(table)	SUBROUTINE: 1. for integers.
-!4.	int_row_switch(i_1,i_2,table) SUBROUTINe: 2. for integers
-
-!Location finders.
-!1.	locate(table,x,j)       SUBROUTINE searchs table finds value where X is between 				XX(J,1) and XX(J+1,1).
-!2.	hunt(table,x,j)		SUBROUTINE finds point in ordered table by searching 					with initial guess.
-
-
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 module sorters
   use types, only : dp
   implicit none
 
-  !Interface to subroutines.
+  !Heapsort is a sorting algorithm that is O(nlogn) worst case. We have
+  !implemented this for tables and vectors, where the tables are sorted
+  !according to the values in the first column (reals) or all columns giving the
+  !leftmost ones priority (integer).
   interface heapsort
   	module procedure heapsort_d
+    module procedure heapsort_d_vect
+    module procedure heapsort_int_vect
   	module procedure heapsorttotal
   end interface heapsort
 
+  !Locate searches a pre-sorted table or vector for a value via bisection and
+  !returns the position in the table that is just below (or equal to) the
+  !searched value.
   interface locate
   	module procedure locate_dp
   	module procedure locate_int
@@ -52,8 +34,24 @@ module sorters
     module procedure locate_dp_vect
   	module procedure locate_int_vect
     module procedure locate_int_int_vect
-
   end interface locate
+
+  !Given a function EQUIV that determines pairwise if two elements of an array
+  !belong to the same equivalence class, equiv_class returns a unique number for
+  !each class and assigns each element one of these numbers.
+  interface equiv_class
+    module procedure equiv_class_int
+    module procedure equiv_class_dp
+    module procedure equiv_class_int_vect
+    module procedure equiv_class_dp_vect
+  end interface equiv_class
+
+  !Derived type for determining equivalence classes.  This is currently
+  !implemented trivially as haven't had a direct need for it, yet.
+  !NOT TESTED!
+  type :: eq_class_data
+    logical :: test
+  end type eq_class_data
 
 contains
 
@@ -138,6 +136,101 @@ implicit none
 	table(i,:) = table(j,:)
 
 end subroutine row_equal_d
+
+!Heapsorts a real vector.
+pure subroutine heapsort_d_vect(table)
+  implicit none
+
+	real(dp), dimension(:), intent(inout) :: table
+	integer :: n, l, ir, i, j, i_1, i_2
+	real(dp) :: rra	!row temporary placeholder.
+
+	rra=0_dp
+	n=size(table,1)
+	l = (n/2)+1	!note the integer division.
+	ir = n
+do1:	do		!indefinite do.  exited by return statement in if.
+		if(l > 1) then
+			l = l-1
+      rra=table(l)
+		else
+      rra=table(ir)
+      table(ir)=table(1)
+			ir = ir -1
+			if(ir==1)then
+				table(1) = rra
+				return
+			end if
+		end if
+		i = l
+		j = l+l
+do2:		do while(j <= ir)
+			if(j < ir) then
+				if(table(j) < table(j+1)) then
+					j = j+1
+				end if
+			end if
+			if(rra < table(j)) then
+        table(i)=table(j)
+				i = j
+				j =j+j
+			else
+				j = ir + 1
+			end if
+		end do do2
+	table(i) = rra
+	end do do1
+		
+
+end subroutine heapsort_d_vect
+
+
+!Heapsorts an integer vector.
+pure subroutine heapsort_int_vect(table)
+  implicit none
+
+	integer, dimension(:), intent(inout) :: table
+	integer :: n, l, ir, i, j, i_1, i_2
+	real(dp) :: rra	!row temporary placeholder.
+
+	rra=0_dp
+	n=size(table,1)
+	l = (n/2)+1	!note the integer division.
+	ir = n
+do1:	do		!indefinite do.  exited by return statement in if.
+		if(l > 1) then
+			l = l-1
+      rra=table(l)
+		else
+      rra=table(ir)
+      table(ir)=table(1)
+			ir = ir -1
+			if(ir==1)then
+				table(1) = rra
+				return
+			end if
+		end if
+		i = l
+		j = l+l
+do2:		do while(j <= ir)
+			if(j < ir) then
+				if(table(j) < table(j+1)) then
+					j = j+1
+				end if
+			end if
+			if(rra < table(j)) then
+        table(i)=table(j)
+				i = j
+				j =j+j
+			else
+				j = ir + 1
+			end if
+		end do do2
+	table(i) = rra
+	end do do1
+		
+
+end subroutine heapsort_int_vect
 
 
 
@@ -613,6 +706,172 @@ implicit none
 
 end subroutine locate_int_int_vect
 
+!*****************************************************************
+!Equivalence class.
+
+!If we have N elements given as rows in an array TABLE and some function EQUIV which can
+!determine "sameness" between them, this routine returns a VECTOR(N) of integers
+!1,...,M that indicate which of the M classes the rows belong to.
+
+!Routine credit to D Eardley circa Numerical Recipes.
+subroutine equiv_class_dp(table, equiv, classes)
+  implicit none
+
+  real(dp), dimension(:,:), intent(in) :: table
+  integer, dimension(size(table,1)), intent(out) :: classes
+  interface
+		pure function equiv(pt1,pt2)
+      use types, only : dp
+			implicit none
+			real(dp), dimension(:), intent(in) :: pt1, pt2
+			logical :: equiv
+		end function equiv
+	end interface
+  integer :: n, jj, kk
+
+  n=size(table,1)
+
+  classes(1)=1
+  do jj=2,n
+    classes(jj)=jj
+    do kk=1,jj-1
+      classes(kk)=classes(classes(kk))
+      if (equiv(table(jj,:),table(kk,:))) classes(classes(classes(kk)))=jj
+    end do
+  end do
+  do jj=1,n
+    classes(jj)=classes(classes(jj))
+  end do
+
+end subroutine equiv_class_dp
+
+subroutine equiv_class_int(table, equiv, classes)
+  implicit none
+
+  integer, dimension(:,:), intent(in) :: table
+  integer, dimension(size(table,1)), intent(out) :: classes
+  interface
+		pure function equiv(pt1,pt2)
+      use types, only : dp
+			implicit none
+			integer, dimension(:), intent(in) :: pt1, pt2
+			logical :: equiv
+		end function equiv
+	end interface
+  integer :: n, jj, kk
+
+  n=size(table,1)
+
+  classes(1)=1
+  do jj=2,n
+    classes(jj)=jj
+    do kk=1,jj-1
+      classes(kk)=classes(classes(kk))
+      if (equiv(table(jj,:),table(kk,:))) classes(classes(classes(kk)))=jj
+    end do
+  end do
+  do jj=1,n
+    classes(jj)=classes(classes(jj))
+  end do
+
+end subroutine equiv_class_int
+
+subroutine equiv_class_dp_vect(table, equiv, classes)
+  implicit none
+
+  real(dp), dimension(:), intent(in) :: table
+  integer, dimension(size(table,1)), intent(out) :: classes
+  interface
+		pure function equiv(pt1,pt2)
+      use types, only : dp
+			implicit none
+			real(dp), intent(in) :: pt1, pt2
+			logical :: equiv
+		end function equiv
+	end interface
+  integer :: n, jj, kk
+
+  n=size(table,1)
+
+  classes(1)=1
+  do jj=2,n
+    classes(jj)=jj
+    do kk=1,jj-1
+      classes(kk)=classes(classes(kk))
+      if (equiv(table(jj),table(kk))) classes(classes(classes(kk)))=jj
+    end do
+  end do
+  do jj=1,n
+    classes(jj)=classes(classes(jj))
+  end do
+
+end subroutine equiv_class_dp_vect
+
+subroutine equiv_class_int_vect(table, equiv, classes)
+  implicit none
+
+  integer, dimension(:), intent(in) :: table
+  integer, dimension(size(table,1)), intent(out) :: classes
+  interface
+		pure function equiv(pt1,pt2)
+      use types, only : dp
+			implicit none
+			integer, intent(in) :: pt1, pt2
+			logical :: equiv
+		end function equiv
+	end interface
+  integer :: n, jj, kk
+
+  n=size(table,1)
+
+  classes(1)=1
+  do jj=2,n
+    classes(jj)=jj
+    do kk=1,jj-1
+      classes(kk)=classes(classes(kk))
+      if (equiv(table(jj),table(kk))) classes(classes(classes(kk)))=jj
+    end do
+  end do
+  do jj=1,n
+    classes(jj)=classes(classes(jj))
+  end do
+
+end subroutine equiv_class_int_vect
+
+!!!!!NOT TESTED!!!!!
+!Finds equivalence classes when the N elements are stored as an array of a
+!derived type.
+subroutine equiv_class_type(table, equiv, classes)
+  implicit none
+
+  type(eq_class_data), dimension(:), intent(in) :: table
+  integer, dimension(size(table,1)), intent(out) :: classes
+  logical :: equiv
+ ! interface
+ ! 	pure function equiv(pt1,pt2)
+ !     use types, only : dp
+ ! 		implicit none
+ !     type(eq_class_data), intent(in) :: pt1, pt2
+ ! 		logical :: equiv
+ ! 	end function equiv
+ ! end interface
+  integer :: n, jj, kk
+
+  n=size(table,1)
+
+  classes(1)=1
+  do jj=2,n
+    classes(jj)=jj
+    do kk=1,jj-1
+      classes(kk)=classes(classes(kk))
+      if (equiv(table(jj),table(kk))) classes(classes(classes(kk)))=jj
+    end do
+  end do
+  do jj=1,n
+    classes(jj)=classes(classes(jj))
+  end do
+
+end subroutine equiv_class_type
 
 end module sorters
 
