@@ -351,5 +351,45 @@ contains
 
 	end subroutine
 
+  !Change a list to an array and delete the list in same motion.
+  subroutine ll_to_array_and_del(list, table)
+		implicit none
+
+		type(linkedlist), intent(inout) :: list
+		real(dp), dimension(:,:), allocatable, intent(out) :: table
+		type(llnode), pointer :: move, delete
+		integer :: counter, i
+
+		!Check if empty.
+		if (.not. associated(list%head)) then
+			return
+		else
+			!Count number of elements in array st can allocate array.
+			!O(n)
+			counter=1
+			move=>list%head
+			do
+				if (.not. associated(move%next)) then
+					exit
+				else
+					counter = counter + 1
+					move=>move%next
+				end if
+			end do
+			!Allocate table
+			allocate(table(counter,size(list%head%a)))
+
+			!Load the table with the list.
+			move=>list%head
+			do i=1, counter
+				table(i,:)=move%a
+				if (associated(move%next)) move=>move%next
+        call ll_del_first(list,delete)
+        deallocate(delete)
+        nullify(delete)
+			end do
+		end if
+
+	end subroutine ll_to_array_and_del
 
   end module linked_list
