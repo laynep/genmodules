@@ -713,14 +713,14 @@ end subroutine locate_int_int_vect
 !determine "sameness" between them, this routine returns a VECTOR(N) of integers
 !1,...,M that indicate which of the M classes the rows belong to.
 
-!Routine credit to D Eardley circa Numerical Recipes.
+!Credit for the routine to D Eardley via Numerical Recipes.
 subroutine equiv_class_dp(table, equiv, classes)
   implicit none
 
   real(dp), dimension(:,:), intent(in) :: table
   integer, dimension(size(table,1)), intent(out) :: classes
   interface
-		pure function equiv(pt1,pt2)
+		function equiv(pt1,pt2)
       use types, only : dp
 			implicit none
 			real(dp), dimension(:), intent(in) :: pt1, pt2

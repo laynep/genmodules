@@ -23,11 +23,10 @@ module features
     implicit none
 
     integer, intent(out), optional :: u
-  ! local
-    integer, parameter :: LUN_MIN=10, LUN_MAX=1000
+    integer, parameter :: LUN_MIN=10, LUN_MAX=10000
     logical :: op
     integer :: lun
-  ! begin
+
     newunit=-1
     do lun=LUN_MIN,LUN_MAX
       inquire(unit=lun,opened=op)
@@ -37,6 +36,42 @@ module features
       end if
     end do
     if (present(u)) u=newunit
+
   end function newunit
+
+  !This shows how to place a non-advancing status counter in a loop, assuming
+  !that the loop starts at i=1 and goes until i=ending.  Can optionally declare
+  !an interval (integer) so that the output is printed only at approximately
+  !these percentages, e.g. interval=10 gives 0%, 10%, 20%,...,100%.  Defaults to
+  !an interval of 5.
+
+  !Taken from web.utah.edu/thorne/computing/Handy_Fortran_Tricks.pdf.
+  subroutine loop_progress_print(i,ending,interval)
+    implicit none
+
+    integer, intent(in) :: i, ending
+    integer, optional, intent(in) :: interval
+    integer :: step
+
+    if (present(interval)) then
+      step=ceiling(real(ending)/real(interval))
+      if (i==1 .and. interval>100) then
+        print*,"Progress display interval exceeds maximum.  Supressing..."
+        return
+      else if (interval>100) then
+        return
+      else if (mod(i,step)==0) then
+        write(*,fmt="(A1,A,t21,F6.2,A)",advance="no") achar(13), &
+          & " Percent Complete: ", (real(i)/real(ending))*100.0, "%"
+      end if
+    else
+      step=ceiling(real(ending)/20.0)
+      if (mod(i,step)==0) then
+         write(*,fmt="(A1,A,t21,F6.2,A)",advance="no") achar(13), &
+             & " Percent Complete: ", (real(i)/real(ending))*100.0, "%"
+      end if
+    end if
+
+  end subroutine loop_progress_print
 
 end module features
