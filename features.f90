@@ -46,31 +46,40 @@ module features
   !an interval of 5.
 
   !Taken from web.utah.edu/thorne/computing/Handy_Fortran_Tricks.pdf.
-  subroutine loop_progress_print(i,ending,interval)
+  subroutine loop_progress_print(i,ending,start,interval)
     implicit none
 
     integer, intent(in) :: i, ending
-    integer, optional, intent(in) :: interval
-    integer :: step
+    integer, optional, intent(in) :: interval, start
+    integer :: step, begin
+
+    if (present(start)) then
+      begin=start
+    else
+      begin=1
+    end if
 
     if (present(interval)) then
-      step=ceiling(real(ending)/real(interval))
-      if (i==1 .and. interval>100) then
-        print*,"Progress display interval exceeds maximum.  Supressing..."
+      step=ceiling(real(ending-begin-1)/real(interval))
+      if (i==begin .and. (interval>100 .or. interval<1)) then
+        print*,"Progress display interval out-of-bounds.  Supressing..."
         return
-      else if (interval>100) then
+      else if (interval>100 .or. interval<1) then
         return
       else if (mod(i,step)==0) then
-        write(*,fmt="(A1,A,t21,F6.2,A)",advance="no") achar(13), &
-          & " Percent Complete: ", (real(i)/real(ending))*100.0, "%"
+        call write_the_percent()
       end if
     else
-      step=ceiling(real(ending)/20.0)
-      if (mod(i,step)==0) then
-         write(*,fmt="(A1,A,t21,F6.2,A)",advance="no") achar(13), &
-             & " Percent Complete: ", (real(i)/real(ending))*100.0, "%"
-      end if
+      step=ceiling(real(ending-begin-1)/20.0)
+      if (mod(i,step)==0) call write_the_percent()
     end if
+
+    contains
+
+      subroutine write_the_percent
+        write(*,fmt="(A1,A,t21,F6.2,A)",advance="no") achar(13), &
+             & " Percent Complete: ", (real(i-begin)/real(ending))*100.0, "%"
+      end subroutine write_the_percent
 
   end subroutine loop_progress_print
 
